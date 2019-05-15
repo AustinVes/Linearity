@@ -1,6 +1,7 @@
 from itertools import groupby
 from copy import deepcopy
 import operator
+from math import sqrt
 
 # CLASSES
 class Tensor:
@@ -67,19 +68,19 @@ class Matrix(Tensor):
 
 	def basis_dimensionality(self):
 
-		return len(self.row_vector())
+		return len(self.row_vectors())
 
 
 class Augmented_Matrix(Matrix):
 
-	def __init__(self, matrix1, matrix2):
+	def __init__(self, matrix1, tensor2):
 
 		matrix1 = deepcopy(matrix1)
 
 		if type(tensor2) is Matrix:
 			matrix2 = deepcopy(tensor2)
 		elif type(tensor2) is Vector:
-				matrix2 = make_column_vector(tensor2)
+				matrix2 = tensor2.make_column_vector()
 		else:
 			raise ValueError(f'2nd input must be Matrix or Vector instance, not {type(tensor2)}')
 
@@ -102,13 +103,17 @@ class Augmented_Matrix(Matrix):
 
 		columns = self.column_vectors()[:self.augment_index]
 		transposed_nested_list = [v.vals for v in columns]
-		nested_list = transpose(transposed_nested_list)
+		nested_list = reverse_nested_list_dimensions(transposed_nested_list)
 
 		return Matrix(nested_list_to_tensor_string(nested_list))
 
 	def augment_matrix(self):
 
-		return Matrix(nested_list_to_tensor_string(self.vals[augment_index:]))
+		columns = self.column_vectors()[self.augment_index:]
+		transposed_nested_list = [v.vals for v in columns]
+		nested_list = reverse_nested_list_dimensions(transposed_nested_list)
+
+		return Matrix(nested_list_to_tensor_string(nested_list))
 
 
 class Vector(Tensor):
@@ -132,7 +137,17 @@ class Vector(Tensor):
 		row_vector_string = ',,'.join(vector_string.split(','))
 		row_vector = Matrix(row_vector_string)
 
-		return row_vector()
+		return row_vector
+
+	def mag(self):
+
+		return sqrt(sum([x**2 for x in self.vals]))
+
+	def hat(self):
+
+		current_mag = self.mag()
+
+		return Vector(nested_list_to_tensor_string([x/current_mag for x in self.vals]))
 
 
 # TENSOR OPERATIONS
@@ -147,7 +162,7 @@ def element_wise_operate(tensor1, tensor2, operation, debug_text=None):
 		else:
 			raise ValueError(f'Cannot compute {operation} on {type(tensor1)} and {type(tensor2)}')
 
-	if tensor1.dimensions() is not tensor2.dimensions():
+	if tensor1.dimensions() != tensor2.dimensions():
 		mxn1 = 'x'.join([str(d) for d in tensor1.dimensions()])
 		mxn2 = 'x'.join([str(d) for d in tensor2.dimensions()])
 		raise ValueError(f'Cannot {debug_text[0]} {mxn1} tensor {debug_text[1]} {mxn2} tensor')
@@ -164,7 +179,7 @@ def element_wise_operate(tensor1, tensor2, operation, debug_text=None):
 
 	return result_tensor
 
-def add(tensor1, tensor2, operation=('add','with')):
+def add(tensor1, tensor2):
 	
 	return element_wise_operate(tensor1, tensor2, operator.add, debug_text=('add','with'))
 
@@ -178,7 +193,7 @@ def multiply(tensor1, tensor2):
 
 def divide(tensor1, tensor2):
 
-	return element_wise_operate(tensor1, tensor2, operator.div, debug_text=('divide','by'))
+	return element_wise_operate(tensor1, tensor2, operator.truediv, debug_text=('divide','by'))
 
 def scalar_multiply(tensor, scalar):
 
@@ -191,7 +206,7 @@ def scalar_multiply(tensor, scalar):
 	multiplied_nested_list = recursive_multiply(scalar, tensor.vals)
 	multiplied_tensor = type(tensor)(nested_list_to_tensor_string(multiplied_nested_list))
 
-	return multiplied_matrix
+	return multiplied_tensor
 
 def contract(A, b):
 
@@ -234,7 +249,7 @@ def swap(tensor, indexes1, indexes2):
 # MATRIX-SPECIFIC OPERATIONS
 def linear_combination(matrix, vector):
 
-	result_list = [vector.dot(v) for v in matrix.row_vectors()]
+	result_list = [dot_product(vector, v) for v in matrix.row_vectors()]
 	result_vector = Vector(nested_list_to_tensor_string(result_list))
 
 	return result_vector
@@ -313,7 +328,7 @@ def make_identity_matrix(m):
 	identity_nested_list = make_null_nested_list(m, m)
 
 	for i in range(m):
-		multi_index_set(1, identity_nested_list, m, m)
+		multi_index_set(1, identity_nested_list, i, i)
 
 	return Matrix(nested_list_to_tensor_string(identity_nested_list))
 
@@ -571,6 +586,4 @@ def pos_to_index(positions, *args):
 		else:
 			positions = [positions] + list(args)
 
-	return [n-1 for n in positions
-
-
+	return [n-1 for n in positions]
