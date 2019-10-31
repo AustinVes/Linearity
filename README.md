@@ -1,7 +1,6 @@
 # Linearity
 A Python library that implements mathematics covered in the linear algebra portion of Linearity I from scratch.  
-This library provides useful classes and functions for manipulating n-dimensional tensors, matrices, and vectors. 
-My final project for Linearity I.
+This library provides useful classes and functions for manipulating n-dimensional tensors, matrices, and vectors.  
 
 I designed a novel format for defining tensors, which I refer to as a 'tensor string', because I felt that existing formats like those in MATLAB or Mathematica had design flaws:  
 1. Scalars and vectors are conceptually continuous with higher-order tensors but, because lists/arrays (vectors) are commonly given their own specialized syntax in programming languages, existing formats that draw from that syntax make an unnecessary and mathematically inconsistent distinction between specifying scalars and vectors.
