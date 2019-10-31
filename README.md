@@ -19,33 +19,28 @@ This is intended purely as a way for a user to define tensors of any rank and sh
 
 ## What's been implemented so far:
 ### Tensor class
-A generic class for defining n-dimensional tensors.  
 `Tensor.init(tensor_string)` := initialize a tensor object using a tensor string  
 `Tensor.dimensions()` := returns the shape of the tensor  
 `Tensor.dimensionality()` := returns the rank of the tensor  
 `Tensor.get(x, *y, *z, ...)` := returns the element at position (x,y,z,...)  
 `Tensor.set(val, x, *y, *z, ...)` := sets the element at position (x,y,z,...) to val  
-### Matrix class
-A subclass of Tensor for more conveniently defining and operating on matrices.  
+### Matrix class  
 `Matrix.init(string)` := initialize a matrix object using a tensor string OR a string literal w/ the elements in the shape you want  
 `Matrix.view()` := prints the matrix in a readable format
 `Matrix.row_vectors()` := returns the row vectors of the matrix as a list of Vector objects  
 `Matrix.column_vectors()` := returns the column vectors of the matrix as a list of Vector objects
 `Matrix.basis_dimensionality()` := returns the dimensionality of the matrix (i.e. number of columns)
-### Augmented_Matrix class
-A subclass of Matrix for assisting augmented-matrix specific operations.  
+### Augmented_Matrix class  
 `Augmented_Matrix.init(A, b)` := initialize an augmented matrix object using a base matrix and an augmenting tensor of rank <3  
 `Augmented_Matrix.base_matrix` := returns the base component of the augmented matrix  
 `Augmented_Matrix.augment_matrix` := returns the augmented component of the augmented matrix
-### Vector class
-A subclass of Tensor for more conveniently defining and operating on vectors.  
+### Vector class  
 `Vector.init(tensor_string)` := initialize a vector object using a tensor string
 `Vector.make_column_vector` := returns the vector as a mx1 matrix  
 `Vector.make_row_vector` := returns the vector as a 1xn matrix  
 `Vector.mag()` := returns the magnitude of the vector  
 `Vector.hat()` := returns a unit vector in the direction of the original vector  
-### Tensor operations
-Operations that will work for tensors of any rank.  
+### Tensor operations  
 `element_wise_operate(A, B, operation)` := perform an element-wise operation of B onto A and return the resulting tensor  
 `add(A, B)` := return the element-wise sum of two tensors  
 `subtract(A, B)` := return the element-wise difference between two tensors  
@@ -54,26 +49,46 @@ Operations that will work for tensors of any rank.
 `scalar_multiply(A, x)` := return the product of tensor A multiplied by scalar x  
 `contract(A, b)` := return the contraction of a tensor by a vector (tensor-by-tensor contraction not yet implemented)  
 `swap(A, p1, p2)` := swaps the sub-tensors at p1 and p2 within tensor A and returns the resulting tensor  
-### Matrix-specific operations
-Operations that will only work on matrices.  
+### Matrix-specific operations  
 `linear_combination(A, b)` := returns the result of linear combination between a matrix and a vector  
 `matrix_multiply(A, B)` := returns the product of two matrices  
 `transpose(A)` := returns the transpose of matrix A  
 ### Vector-specific operations
-Operations that will only work on vectors.
 `dot_product(a, b)` := returns a.b
-### Template tensor generators
-Shortcuts for creating common tensors.  
+### Template tensor generators  
 `make_constant_tensor(val, shape)` := returns a tensor of specified shape where every element is val  
 `make_empty_tensor(shape)` := returns a tensor where every element is None  
 `make_null_tensor(shape)` := returns a tensor where every element is 0  
-### Template matrix generators
-Shortcuts for creating common matrices.  
+### Template matrix generators  
 `make_constant_matrix(val, m, n)` := returns an mxn matrix where every element is val  
 `make_empty_matrix(m, n)` := returns an mxn matrix where every element is None  
 `make_null_matrix(m, n)` := returns an mxn matrix where every element is 0  
 `make_identity_matrix(m)` := returns an mxm identity matrix  
-### Template vector generators
-Shortcuts for creating common vectors.  
+### Template vector generators  
 `make_constant_vector(val, n)` := returns a vector of length n where every element is val  
 `make_null_vector(n)` := returns a vector of length n where every element is 0
+
+### Helper functions that run in the backend
+The user should never see these, but they do the heavy lifting to abstract the nested lists into more mathematically correct tensors. Documented here for completion's sake.  
+#### Tensor string - matrix string - nested list conversion
+`tensor_string_to_nested_list(tensor_string)`  
+`nested_list_to_tensor_string(nested_list)`  
+`matrix_string_to_tensor_string(matrix_string)`  
+#### Tensor/matrix string properties
+`matrix_string_or_tensor_string(mystery_string)`  
+`get_tensor_string_dimensions(tensor_string)`  
+#### Nested list properties
+`verify_nested_list(nested_list)`  
+`get_nested_list_dimensions(nested_list)`  
+#### Nested list manipulation
+`multi_index_get(nested_list, indexes, *args)`  
+`multi_index_set(val, nested_list, indexes, *args, in_place=True, verify=True)`  
+`reverse_nested_list_dimensions(nested_list)`  
+`swap_nested_list(nested_list, indexes1, indexes2, in_place=False)`  
+#### Template nested list generators
+`make_constant_nested_list(val, dimensions, *args, shallowcopy=False)`  
+`make_empty_nested_list(dimensions, *args)`  
+`make_null_nested_list(dimensions, *args)`  
+#### Misc. helper functions
+`index_to_pos(indexes, *args)`  
+`pos_to_index(positions, *args)`  
